@@ -1,3 +1,7 @@
+function vec2_length(vec2) {
+  return Math.sqrt(vec2.x * vec2.x + vec2.y * vec2.y);
+}
+
 function vec2_scale(vec2, scale) {
   return { x: vec2.x * scale, y: vec2.y * scale };
 }
@@ -46,8 +50,30 @@ const dynamics = [
   new Verlet({ x: 300, y: 200 }, { x: 300, y: 200 }, VEC2_GRAVITY),
 ];
 
+const RAMP_CENTER = { x: 200, y: 500 };
+const RAMP_RADIUS = 200;
+
 function updateOne(dt, verlet) {
   dt /= 16;
+
+  // apply constraints
+  const belowCenterOfRamp = verlet.current_position.y > RAMP_CENTER.y;
+  const toRampCenter = vec2_subtract(RAMP_CENTER, verlet.current_position);
+  const distanceDiskToRampCenter = vec2_length(toRampCenter);
+  const outOfBounds = distanceDiskToRampCenter > RAMP_RADIUS;
+  console.log("belowCenterOfRamp, outOfBounds", belowCenterOfRamp, outOfBounds);
+  if (belowCenterOfRamp && outOfBounds) {
+    const displacement = distanceDiskToRampCenter - RAMP_RADIUS;
+    const displacementDirection = vec2_scale(
+      toRampCenter,
+      1 / distanceDiskToRampCenter,
+    );
+    console.log("calculating constraints", displacement, displacementDirection);
+    verlet.current_position = vec2_add(
+      verlet.current_position,
+      vec2_scale(displacementDirection, displacement),
+    );
+  }
 
   const velocity = vec2_subtract(
     verlet.current_position,
