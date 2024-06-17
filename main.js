@@ -47,6 +47,8 @@ const dynamics = [
 ];
 
 function updateOne(dt, verlet) {
+  dt /= 16;
+
   const velocity = vec2_subtract(
     verlet.current_position,
     verlet.previous_position,
