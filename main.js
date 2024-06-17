@@ -42,8 +42,8 @@ const VEC2_ZERO = { x: 0, y: 0 };
 const VEC2_GRAVITY = { x: 0, y: 10 };
 
 const dynamics = [
-  new Verlet({ x: 0, y: 0 }, { x: 0, y: 0 }, VEC2_GRAVITY),
-  new Verlet({ x: 200, y: 200 }, { x: 200, y: 200 }, VEC2_GRAVITY),
+  new Verlet({ x: 50, y: 0 }, { x: 50, y: 0 }, VEC2_GRAVITY),
+  new Verlet({ x: 300, y: 200 }, { x: 300, y: 200 }, VEC2_GRAVITY),
 ];
 
 function updateOne(dt, verlet) {
@@ -63,8 +63,7 @@ function updateOne(dt, verlet) {
   verlet.current_position = next_position;
 }
 
-renderDisk({ x: 200, y: 200 });
-renderDisk({ x: 0, y: 0 });
+dynamics.forEach((d) => renderDisk(d.current_position));
 
 const ITERATION_LIMIT = 100;
 let iteration = 0;
