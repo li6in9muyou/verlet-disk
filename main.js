@@ -32,13 +32,16 @@ class Verlet {
   }
 }
 
+let iteration = 0;
 function renderDisk(position, extra) {
+  // document.querySelectorAll("div.disk").forEach((e) => e.remove());
   const disk = document.createElement("div");
   disk.classList.add("disk");
   // TODO: compensate for disk radius
   disk.style.top = `${position.y - extra.size / 2}px`;
   disk.style.left = `${position.x - extra.size / 2}px`;
   document.body.appendChild(disk);
+  disk.textContent = iteration.toString();
   console.log("position", position);
 }
 
@@ -46,8 +49,8 @@ const VEC2_ZERO = { x: 0, y: 0 };
 const VEC2_GRAVITY = { x: 0, y: 10 };
 
 const dynamics = [
-  new Verlet({ x: 20, y: 20 }, { x: 20, y: 20 }, VEC2_GRAVITY),
-  new Verlet({ x: 300, y: 200 }, { x: 300, y: 200 }, VEC2_GRAVITY),
+  new Verlet({ x: 30, y: 20 }, { x: 30, y: 20 }, VEC2_GRAVITY),
+  // new Verlet({ x: 300, y: 200 }, { x: 300, y: 200 }, VEC2_GRAVITY),
 ];
 
 const RAMP_CENTER = { x: 200, y: 500 };
@@ -60,10 +63,10 @@ function updateOne(dt, verlet) {
   const belowCenterOfRamp = verlet.current_position.y > RAMP_CENTER.y;
   const toRampCenter = vec2_subtract(RAMP_CENTER, verlet.current_position);
   const distanceDiskToRampCenter = vec2_length(toRampCenter);
-  const outOfBounds = distanceDiskToRampCenter > RAMP_RADIUS;
+  const outOfBounds = distanceDiskToRampCenter + 20 > RAMP_RADIUS;
   console.log("belowCenterOfRamp, outOfBounds", belowCenterOfRamp, outOfBounds);
   if (belowCenterOfRamp && outOfBounds) {
-    const displacement = distanceDiskToRampCenter - RAMP_RADIUS;
+    const displacement = distanceDiskToRampCenter + 20 - RAMP_RADIUS;
     const displacementDirection = vec2_scale(
       toRampCenter,
       1 / distanceDiskToRampCenter,
@@ -93,7 +96,6 @@ const extra = [{ size: 40 }, { size: 40 }];
 dynamics.forEach((d, idx) => renderDisk(d.current_position, extra[idx]));
 
 const ITERATION_LIMIT = 100;
-let iteration = 0;
 function go() {
   dynamics.forEach((v) => updateOne(16, v));
   dynamics.forEach((v, idx) => renderDisk(v.current_position, extra[idx]));
