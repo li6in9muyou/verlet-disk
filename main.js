@@ -42,7 +42,7 @@ function renderDisk(position, extra) {
   disk.style.left = `${position.x - extra.size / 2}px`;
   document.body.appendChild(disk);
   disk.textContent = iteration.toString();
-  console.log("position", position);
+  console.log("position at render", position);
 }
 
 const VEC2_ZERO = { x: 0, y: 0 };
@@ -57,7 +57,7 @@ const RAMP_CENTER = { x: 200, y: 500 };
 const RAMP_RADIUS = 200;
 
 function updateOne(dt, verlet) {
-  dt /= 16;
+  dt /= 24;
 
   // apply constraints
   const belowCenterOfRamp = verlet.current_position.y > RAMP_CENTER.y;
@@ -71,11 +71,17 @@ function updateOne(dt, verlet) {
       toRampCenter,
       1 / distanceDiskToRampCenter,
     );
-    console.log("calculating constraints", displacement, displacementDirection);
+    console.log("position before", verlet.current_position);
+    console.log(
+      "constraints: displacement, displacementDirection",
+      displacement,
+      displacementDirection,
+    );
     verlet.current_position = vec2_add(
       verlet.current_position,
       vec2_scale(displacementDirection, displacement),
     );
+    console.log("position after", verlet.current_position);
   }
 
   const velocity = vec2_subtract(
@@ -93,12 +99,13 @@ function updateOne(dt, verlet) {
 }
 
 const extra = [{ size: 40 }, { size: 40 }];
-dynamics.forEach((d, idx) => renderDisk(d.current_position, extra[idx]));
 
 const ITERATION_LIMIT = 100;
 function go() {
+  console.groupCollapsed(`iteration ${iteration}`);
   dynamics.forEach((v) => updateOne(16, v));
   dynamics.forEach((v, idx) => renderDisk(v.current_position, extra[idx]));
+  console.groupEnd(`iteration ${iteration}`);
   if (iteration < ITERATION_LIMIT) {
     iteration += 1;
     requestAnimationFrame(go);
