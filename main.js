@@ -88,6 +88,7 @@ function updateOne(dt, verlet) {
     verlet.current_position,
     verlet.previous_position,
   );
+  console.log("speed", vec2_length(velocity), velocity);
   const next_position = vec2_add(
     verlet.current_position,
     vec2_scale(velocity, dt),
