@@ -49,7 +49,7 @@ const VEC2_ZERO = { x: 0, y: 0 };
 const VEC2_GRAVITY = { x: 0, y: 10 };
 
 const dynamics = [
-  new Verlet({ x: 30, y: 20 }, { x: 30, y: 20 }, VEC2_GRAVITY),
+  new Verlet({ x: 20, y: 20 }, { x: 20, y: 0 }, VEC2_GRAVITY),
   // new Verlet({ x: 300, y: 200 }, { x: 300, y: 200 }, VEC2_GRAVITY),
 ];
 
@@ -57,8 +57,6 @@ const RAMP_CENTER = { x: 200, y: 500 };
 const RAMP_RADIUS = 200;
 
 function updateOne(dt, verlet) {
-  dt /= 24;
-
   // apply constraints
   const belowCenterOfRamp = verlet.current_position.y > RAMP_CENTER.y;
   const toRampCenter = vec2_subtract(RAMP_CENTER, verlet.current_position);
@@ -101,10 +99,10 @@ function updateOne(dt, verlet) {
 
 const extra = [{ size: 40 }, { size: 40 }];
 
-const ITERATION_LIMIT = 100;
+const ITERATION_LIMIT = 30;
 function go() {
   console.groupCollapsed(`iteration ${iteration}`);
-  dynamics.forEach((v) => updateOne(16, v));
+  dynamics.forEach((v) => updateOne(1, v));
   dynamics.forEach((v, idx) => renderDisk(v.current_position, extra[idx]));
   console.groupEnd(`iteration ${iteration}`);
   if (iteration < ITERATION_LIMIT) {
