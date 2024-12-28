@@ -82,6 +82,7 @@ function updateOne(dt, verlet) {
   const toRampCenter = vec2_subtract(RAMP_CENTER, verlet.current_position);
   const distanceDiskToRampCenter = vec2_length(toRampCenter);
   const outOfBounds = distanceDiskToRampCenter + 20 > RAMP_RADIUS;
+  console.log("position", verlet.current_position.x, verlet.current_position.y);
   console.log("belowCenterOfRamp, outOfBounds", belowCenterOfRamp, outOfBounds);
   if (belowCenterOfRamp && outOfBounds) {
     const displacement = distanceDiskToRampCenter + 20 - RAMP_RADIUS;
@@ -121,7 +122,7 @@ function updateOne(dt, verlet) {
 
 const extra = [{ size: 40 }, { size: 40 }];
 
-const ITERATION_LIMIT = 30;
+const ITERATION_LIMIT = 15;
 function go() {
   console.groupCollapsed(`iteration ${iteration}`);
   dynamics.forEach((v) => updateOne(1, v));
