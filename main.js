@@ -57,6 +57,20 @@ const RAMP_CENTER = { x: 200, y: 500 };
 const RAMP_RADIUS = 200;
 
 function updateOne(dt, verlet) {
+  const velocity = vec2_subtract(
+    verlet.current_position,
+    verlet.previous_position,
+  );
+  console.log("speed", vec2_length(velocity), velocity);
+  const next_position = vec2_add(
+    verlet.current_position,
+    vec2_scale(velocity, dt),
+    vec2_scale(verlet.acceleration, dt * dt),
+  );
+
+  verlet.previous_position = verlet.current_position;
+  verlet.current_position = next_position;
+
   // apply constraints
   const belowCenterOfRamp = verlet.current_position.y > RAMP_CENTER.y;
   const toRampCenter = vec2_subtract(RAMP_CENTER, verlet.current_position);
@@ -81,20 +95,6 @@ function updateOne(dt, verlet) {
     );
     console.log("position after", verlet.current_position);
   }
-
-  const velocity = vec2_subtract(
-    verlet.current_position,
-    verlet.previous_position,
-  );
-  console.log("speed", vec2_length(velocity), velocity);
-  const next_position = vec2_add(
-    verlet.current_position,
-    vec2_scale(velocity, dt),
-    vec2_scale(verlet.acceleration, dt * dt),
-  );
-
-  verlet.previous_position = verlet.current_position;
-  verlet.current_position = next_position;
 }
 
 const extra = [{ size: 40 }, { size: 40 }];
