@@ -71,6 +71,12 @@ function updateOne(dt, verlet) {
   verlet.previous_position = verlet.current_position;
   verlet.current_position = next_position;
 
+  const velocityBeforeConstraint = vec2_subtract(
+    verlet.current_position,
+    verlet.previous_position,
+  );
+  const speedBeforeConstraint = vec2_length(velocityBeforeConstraint);
+
   // apply constraints
   const belowCenterOfRamp = verlet.current_position.y > RAMP_CENTER.y;
   const toRampCenter = vec2_subtract(RAMP_CENTER, verlet.current_position);
@@ -95,6 +101,22 @@ function updateOne(dt, verlet) {
     );
     console.log("position after", verlet.current_position);
   }
+
+  const velocityAfterConstraint = vec2_subtract(
+    verlet.current_position,
+    verlet.previous_position,
+  );
+  const speedAfterConstraint = vec2_length(velocityAfterConstraint);
+  const dirVelocityAfterConstraint = vec2_scale(
+    velocityAfterConstraint,
+    1 / speedAfterConstraint,
+  );
+
+  const diffSpeed = speedAfterConstraint - speedBeforeConstraint;
+  verlet.previous_position = vec2_add(
+    verlet.previous_position,
+    vec2_scale(dirVelocityAfterConstraint, +1 * diffSpeed),
+  );
 }
 
 const extra = [{ size: 40 }, { size: 40 }];
