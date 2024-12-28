@@ -37,7 +37,6 @@ function renderDisk(position, extra) {
   // document.querySelectorAll("div.disk").forEach((e) => e.remove());
   const disk = document.createElement("div");
   disk.classList.add("disk");
-  // TODO: compensate for disk radius
   disk.style.top = `${position.y - extra.size / 2}px`;
   disk.style.left = `${position.x - extra.size / 2}px`;
   document.body.appendChild(disk);
