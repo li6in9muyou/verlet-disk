@@ -122,14 +122,14 @@ function updateOne(dt, verlet) {
 const extra = [{ size: 40 }, { size: 40 }];
 
 const ITERATION_LIMIT = 15;
-function go() {
+function sim() {
   console.groupCollapsed(`iteration ${iteration}`);
   dynamics.forEach((v) => updateOne(1, v));
   dynamics.forEach((v, idx) => renderDisk(v.current_position, extra[idx]));
   console.groupEnd(`iteration ${iteration}`);
   if (iteration < ITERATION_LIMIT) {
     iteration += 1;
-    requestAnimationFrame(go);
+    requestAnimationFrame(sim);
   }
 }
-requestAnimationFrame(go);
+requestAnimationFrame(sim);
