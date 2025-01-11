@@ -1,12 +1,12 @@
-function vec2_length(vec2) {
+export function vec2_length(vec2) {
   return Math.sqrt(vec2.x * vec2.x + vec2.y * vec2.y);
 }
 
-function vec2_scale(vec2, scale) {
+export function vec2_scale(vec2, scale) {
   return { x: vec2.x * scale, y: vec2.y * scale };
 }
 
-function vec2_add(...operands) {
+export function vec2_add(...operands) {
   return operands.reduce(
     (sum, operand) => {
       sum.x += operand.x;
@@ -17,7 +17,7 @@ function vec2_add(...operands) {
   );
 }
 
-function vec2_subtract(lhs, rhs) {
+export function vec2_subtract(lhs, rhs) {
   return { x: lhs.x - rhs.x, y: lhs.y - rhs.y };
 }
 
@@ -132,4 +132,4 @@ function sim() {
     requestAnimationFrame(sim);
   }
 }
-requestAnimationFrame(sim);
+// requestAnimationFrame(sim);
