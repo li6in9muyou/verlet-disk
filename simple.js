@@ -65,14 +65,21 @@ function updateOne(dt, verlet, extra) {
   verlet.previous_position = verlet.current_position;
 
   if (verlet.current_position.y + extra.height / 2 > UPPER_BOUND.y) {
-    verlet.current_position = { ...verlet.current_position, y: UPPER_BOUND.y - extra.height / 2 }
+    verlet.current_position = {
+      ...verlet.current_position,
+      y: UPPER_BOUND.y - extra.height / 2,
+    };
+  } else if (verlet.current_position.y - extra.height / 2 < LOWER_BOUND.y) {
+    verlet.current_position = {
+      ...verlet.current_position,
+      y: LOWER_BOUND.y + extra.height / 2,
+    };
   } else {
-    const next_position = vec2_add(
+    verlet.current_position = vec2_add(
       verlet.current_position,
       vec2_scale(velocity, dt),
       vec2_scale(verlet.acceleration, dt * dt),
     );
-    verlet.current_position = next_position;
   }
 }
 
