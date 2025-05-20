@@ -51,6 +51,17 @@ const VEC2_ZERO = { x: 0, y: 0 };
 const LOWER_BOUND = { x: 0, y: 50 };
 const UPPER_BOUND = { x: 0, y: 1000 };
 
+function renderBound(bound) {
+  document.querySelectorAll("div.disk").forEach((e) => e.remove());
+  const disk = document.createElement("div");
+  disk.classList.add("bound");
+  disk.style.top = `${bound.y}px`;
+  disk.style.left = 0;
+  document.body.appendChild(disk);
+}
+renderBound(LOWER_BOUND);
+renderBound(UPPER_BOUND);
+
 const dynamics = [
   new Verlet({ x: 100, y: 150 }, { x: 100, y: 100 }, VEC2_ZERO),
 ];
