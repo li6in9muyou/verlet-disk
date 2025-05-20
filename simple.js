@@ -75,18 +75,45 @@ function updateOne(dt, verlet, extra) {
   );
   console.log("speed", vec2_length(velocity), velocity);
 
+  const velocityBeforeConstraint = vec2_subtract(
+    verlet.current_position,
+    verlet.previous_position,
+  );
+  const speedBeforeConstraint = vec2_length(velocityBeforeConstraint);
   verlet.previous_position = verlet.current_position;
 
-  if (verlet.current_position.y + extra.height / 2 > UPPER_BOUND.y) {
-    verlet.current_position = {
-      ...verlet.current_position,
-      y: UPPER_BOUND.y - extra.height / 2,
-    };
-  } else if (verlet.current_position.y - extra.height / 2 < LOWER_BOUND.y) {
-    verlet.current_position = {
-      ...verlet.current_position,
-      y: LOWER_BOUND.y + extra.height / 2,
-    };
+  const hitUpperBound =
+    verlet.current_position.y + extra.height / 2 > UPPER_BOUND.y;
+  const hitLowerBound =
+    verlet.current_position.y - extra.height / 2 < LOWER_BOUND.y;
+  if (hitUpperBound || hitLowerBound) {
+    if (hitUpperBound) {
+      verlet.current_position = {
+        ...verlet.current_position,
+        y: UPPER_BOUND.y - extra.height / 2,
+      };
+    } else if (hitLowerBound) {
+      verlet.current_position = {
+        ...verlet.current_position,
+        y: LOWER_BOUND.y + extra.height / 2,
+      };
+    }
+
+    const velocityAfterConstraint = vec2_subtract(
+      verlet.current_position,
+      verlet.previous_position,
+    );
+    const speedAfterConstraint = vec2_length(velocityAfterConstraint);
+    const dirVelocityAfterConstraint = vec2_scale(
+      velocityAfterConstraint,
+      1 / speedAfterConstraint,
+    );
+
+    const diffSpeed = speedAfterConstraint - speedBeforeConstraint;
+    verlet.previous_position = vec2_add(
+      verlet.previous_position,
+      vec2_scale(dirVelocityAfterConstraint, +1 * diffSpeed),
+    );
   } else {
     verlet.current_position = vec2_add(
       verlet.current_position,
