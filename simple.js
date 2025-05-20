@@ -44,7 +44,7 @@ function renderDisk(positions, extras) {
     const disk = document.createElement("div");
     disk.classList.add("disk");
     disk.style.top = `${position.y - extra.height / 2}px`;
-    disk.style.left = "50%";
+    disk.style.left = `${position.x - extra.width / 2}px`;
     disk.style.background = extra.color;
     disk.style.lineHeight = `${extra.height}px`;
     document.body.appendChild(disk);
@@ -126,10 +126,12 @@ function updateOne(dt, verlet, extra) {
       vec2_scale(velocity, dt),
       vec2_scale(verlet.acceleration, dt * dt),
     );
+    const collision = findCollision(verlet, extra, dynamics, extras);
+    console.log("libq colli/fond", collision);
   }
 }
 
-const extra = [
+const extras = [
   { width: 40, height: 80, color: "red" },
   { width: 40, height: 80, color: "green" },
 ];
@@ -150,11 +152,11 @@ function getParam(paramName) {
 
 const ITERATION_LIMIT = getParam("limit") ?? 21;
 function sim() {
-  console.groupCollapsed(`iteration ${iteration}`);
-  dynamics.forEach((v, idx) => updateOne(1, v, extra[idx]));
+  console.group(`iteration ${iteration}`);
+  dynamics.forEach((v, idx) => updateOne(1, v, extras[idx]));
   renderDisk(
     dynamics.map((d) => d.current_position),
-    extra,
+    extras,
   );
   console.groupEnd(`iteration ${iteration}`);
   if (iteration < ITERATION_LIMIT) {
@@ -163,3 +165,39 @@ function sim() {
   }
 }
 requestAnimationFrame(sim);
+
+function findCollision(v, myExtra, allV, allExtra) {
+  const myPos = v.current_position;
+  const left = myPos.x - myExtra.width / 2;
+  const right = myPos.x + myExtra.width / 2;
+  const top = myPos.y - myExtra.height / 2;
+  const bottom = myPos.y + myExtra.height / 2;
+
+  const collideWith = [];
+
+  for (const [index, other] of allV.entries()) {
+    if (other === v) {
+      continue;
+    }
+
+    const otherPos = other.current_position;
+    const otherExtra = allExtra[index];
+
+    const otherLeft = otherPos.x - otherExtra.width / 2;
+    const otherRight = otherPos.x + otherExtra.width / 2;
+    const otherTop = otherPos.y - otherExtra.height / 2;
+    const otherBottom = otherPos.y + otherExtra.height / 2;
+
+    console.log("libq colli", top, otherTop);
+    if (
+      left < otherRight &&
+      right > otherLeft &&
+      top < otherBottom &&
+      bottom > otherTop
+    ) {
+      collideWith.push(other);
+    }
+  }
+
+  return collideWith;
+}
