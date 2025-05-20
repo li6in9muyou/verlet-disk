@@ -34,7 +34,9 @@ class Verlet {
 
 let iteration = 0;
 function renderDisk(position, extra) {
-  // document.querySelectorAll("div.disk").forEach((e) => e.remove());
+  if (!getParam("trace")) {
+    document.querySelectorAll("div.disk").forEach((e) => e.remove());
+  }
   const disk = document.createElement("div");
   disk.classList.add("disk");
   disk.style.top = `${position.y - extra.height / 2}px`;
@@ -99,7 +101,21 @@ const extra = [
   { width: 40, height: 80, color: "green" },
 ];
 
-const ITERATION_LIMIT = 21;
+function getParam(paramName) {
+  const urlParams = new URLSearchParams(window.location.search);
+
+  if (urlParams.has(paramName)) {
+    const value = urlParams.get(paramName);
+    if (value === "") {
+      return true;
+    }
+    return value;
+  }
+
+  return null;
+}
+
+const ITERATION_LIMIT = getParam("limit") ?? 21;
 function sim() {
   console.groupCollapsed(`iteration ${iteration}`);
   dynamics.forEach((v, idx) => updateOne(1, v, extra[idx]));
