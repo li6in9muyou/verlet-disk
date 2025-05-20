@@ -33,19 +33,24 @@ class Verlet {
 }
 
 let iteration = 0;
-function renderDisk(position, extra) {
+function renderDisk(positions, extras) {
   if (!getParam("trace")) {
     document.querySelectorAll("div.disk").forEach((e) => e.remove());
   }
-  const disk = document.createElement("div");
-  disk.classList.add("disk");
-  disk.style.top = `${position.y - extra.height / 2}px`;
-  disk.style.left = "50%";
-  disk.style.background = extra.color;
-  disk.style.lineHeight = `${extra.height}px`;
-  document.body.appendChild(disk);
-  disk.textContent = iteration.toString();
-  console.log("position at render", position);
+  for (let idx = 0; idx < positions.length; idx++) {
+    const position = positions[idx];
+    const extra = extras[idx];
+
+    const disk = document.createElement("div");
+    disk.classList.add("disk");
+    disk.style.top = `${position.y - extra.height / 2}px`;
+    disk.style.left = "50%";
+    disk.style.background = extra.color;
+    disk.style.lineHeight = `${extra.height}px`;
+    document.body.appendChild(disk);
+    disk.textContent = iteration.toString();
+    console.log("position at render", position);
+  }
 }
 
 const VEC2_ZERO = { x: 0, y: 0 };
@@ -66,6 +71,7 @@ renderBound(UPPER_BOUND);
 
 const dynamics = [
   new Verlet({ x: 100, y: 150 }, { x: 100, y: 100 }, VEC2_ZERO),
+  new Verlet({ x: 100, y: 900 }, { x: 100, y: 950 }, VEC2_ZERO),
 ];
 
 function updateOne(dt, verlet, extra) {
@@ -146,7 +152,10 @@ const ITERATION_LIMIT = getParam("limit") ?? 21;
 function sim() {
   console.groupCollapsed(`iteration ${iteration}`);
   dynamics.forEach((v, idx) => updateOne(1, v, extra[idx]));
-  dynamics.forEach((v, idx) => renderDisk(v.current_position, extra[idx]));
+  renderDisk(
+    dynamics.map((d) => d.current_position),
+    extra,
+  );
   console.groupEnd(`iteration ${iteration}`);
   if (iteration < ITERATION_LIMIT) {
     iteration += 1;
