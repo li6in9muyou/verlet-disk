@@ -40,6 +40,7 @@ function renderDisk(position, extra) {
   disk.style.top = `${position.y - extra.height / 2}px`;
   disk.style.left = "50%";
   disk.style.background = extra.color;
+  disk.style.lineHeight = `${extra.height}px`;
   document.body.appendChild(disk);
   disk.textContent = iteration.toString();
   console.log("position at render", position);
@@ -47,21 +48,43 @@ function renderDisk(position, extra) {
 
 const VEC2_ZERO = { x: 0, y: 0 };
 
+const LOWER_BOUND = { x: 0, y: 50 };
+const UPPER_BOUND = { x: 0, y: 1000 };
+
 const dynamics = [
   new Verlet({ x: 100, y: 150 }, { x: 100, y: 100 }, VEC2_ZERO),
 ];
 
-function updateOne(dt, verlet) { }
+function updateOne(dt, verlet, extra) {
+  const velocity = vec2_subtract(
+    verlet.current_position,
+    verlet.previous_position,
+  );
+  console.log("speed", vec2_length(velocity), velocity);
+
+  verlet.previous_position = verlet.current_position;
+
+  if (verlet.current_position.y + extra.height / 2 > UPPER_BOUND.y) {
+    verlet.current_position = { ...verlet.current_position, y: UPPER_BOUND.y - extra.height / 2 }
+  } else {
+    const next_position = vec2_add(
+      verlet.current_position,
+      vec2_scale(velocity, dt),
+      vec2_scale(verlet.acceleration, dt * dt),
+    );
+    verlet.current_position = next_position;
+  }
+}
 
 const extra = [
   { width: 40, height: 80, color: "red" },
   { width: 40, height: 80, color: "green" },
 ];
 
-const ITERATION_LIMIT = 30;
+const ITERATION_LIMIT = 21;
 function sim() {
   console.groupCollapsed(`iteration ${iteration}`);
-  dynamics.forEach((v) => updateOne(1, v));
+  dynamics.forEach((v, idx) => updateOne(1, v, extra[idx]));
   dynamics.forEach((v, idx) => renderDisk(v.current_position, extra[idx]));
   console.groupEnd(`iteration ${iteration}`);
   if (iteration < ITERATION_LIMIT) {
